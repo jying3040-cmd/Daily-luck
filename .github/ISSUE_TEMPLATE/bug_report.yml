@@ -1,0 +1,45 @@
+name: 缺陷报告
+description: 报告可以稳定复现的问题
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: 请勿附加真实个人资料、数据库或密钥。安全漏洞请使用 Security 页面私下报告。
+  - type: textarea
+    id: description
+    attributes:
+      label: 问题描述
+      description: 实际发生了什么？预期行为是什么？
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      placeholder: |
+        1. 启动应用
+        2. 打开……
+        3. 点击……
+    validations:
+      required: true
+  - type: input
+    id: node
+    attributes:
+      label: Node.js 版本
+      placeholder: v22.12.0
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: 操作系统与浏览器
+      placeholder: Windows 11 / Chrome 版本号
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: 脱敏后的日志
+      render: shell
