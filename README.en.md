@@ -41,6 +41,21 @@ Most fortune apps are either ad-ridden web pages or services that ask you to upl
 - 📈 **7-day trend**: a luck curve centered on today (±3 days)
 - 💾 **SQLite cache**: daily reports are cached, so repeat visits cost zero computation
 
+## How are scores generated?
+
+Daily Luck is a deterministic entertainment product, not a prediction model. The same profile and date always produce the same reading; the integer scores on screen express relative trends, not statistical probabilities or the likelihood of real events.
+
+| Data source | Role in the product | Nature |
+| --- | --- | --- |
+| `lunar-typescript` | Lunar calendar, BaZi, zodiac, almanac, clashes and directions | Calendar data and traditional rules |
+| Birth date and time | Four pillars, star sign, zodiac, life path number, element relations | Traditional/pop-culture mapping |
+| Blood type, phone tail, name length | Small bonuses applied to category scores | Custom entertainment rules |
+| Hash of profile and date | Generates a stable base score with small variations | Deterministic pseudo-randomness, not prediction |
+
+Each category score starts from a stable base, applies the rules above, is clamped to a fixed range, and the overall score is their average. The implementation lives in [`server/src/fortune.ts`](server/src/fortune.ts) and is fully open to review, modification and testing.
+
+So read `69` or `74` as relative standings under one set of entertainment rules — not a 69% or 74% "accuracy rate".
+
 ## Getting Started
 
 ### Requirements
