@@ -1,0 +1,10 @@
+node_modules
+frontend/dist
+server/dist
+data
+docs
+.git
+.github
+*.log
+*.md
+!README.md
