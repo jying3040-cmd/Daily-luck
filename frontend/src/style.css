@@ -28,6 +28,8 @@ body {
   margin: 0;
   font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", system-ui, sans-serif;
   background: var(--color-paper);
+  /* 宣纸上的祥云暗纹 */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='170' height='170' fill='none'%3E%3Cg stroke='%232a2723' stroke-opacity='0.05' stroke-width='1.5' stroke-linecap='round'%3E%3Cpath d='M24 34 q-6 0 -6 -4.5 q0 -4.5 6.5 -4 a8 8 0 0 1 15 -3.5 a9 9 0 0 1 16 4 q7 -1 8.5 4 q1.5 5 -6 8 h-26'/%3E%3Cpath d='M104 124 q-6 0 -6 -4.5 q0 -4.5 6.5 -4 a8 8 0 0 1 15 -3.5 a9 9 0 0 1 16 4 q7 -1 8.5 4 q1.5 5 -6 8 h-26' transform='rotate(-8 118 116)'/%3E%3C/g%3E%3C/svg%3E");
   color: var(--color-ink);
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
@@ -83,5 +85,34 @@ input[type="time"] {
 
   .rule-label {
     @apply text-[11px] text-ink-faint;
+  }
+
+  /* 云朵形下边缘（如意云头扇贝边） */
+  .cloud-edge {
+    --cloud: 9px;
+    -webkit-mask:
+      linear-gradient(#000 0 0) top / 100% calc(100% - var(--cloud)) no-repeat,
+      radial-gradient(circle at 50% 0, #000 calc(var(--cloud) - 1px), #0000 var(--cloud)) 0 100% / calc(2 * var(--cloud)) var(--cloud) repeat-x;
+    mask:
+      linear-gradient(#000 0 0) top / 100% calc(100% - var(--cloud)) no-repeat,
+      radial-gradient(circle at 50% 0, #000 calc(var(--cloud) - 1px), #0000 var(--cloud)) 0 100% / calc(2 * var(--cloud)) var(--cloud) repeat-x;
+  }
+
+  /* 招财猫的对话气泡 */
+  .bubble {
+    @apply relative rounded-[10px] border border-hairline bg-sheet px-4 py-3;
+  }
+
+  .bubble::before {
+    content: "";
+    position: absolute;
+    left: 26px;
+    bottom: -6px;
+    width: 11px;
+    height: 11px;
+    background: var(--color-sheet);
+    border-right: 1px solid var(--color-hairline);
+    border-bottom: 1px solid var(--color-hairline);
+    transform: rotate(45deg);
   }
 }

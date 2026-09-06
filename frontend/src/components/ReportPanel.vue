@@ -3,6 +3,8 @@ import { computed } from 'vue'
 import { Loader2 } from '@lucide/vue'
 import ScoreGauge from './ScoreGauge.vue'
 import TrendChart from './TrendChart.vue'
+import FortuneCat from './FortuneCat.vue'
+import CloudDivider from './CloudDivider.vue'
 import type { Report } from '../lib/types'
 
 const props = defineProps<{
@@ -20,14 +22,27 @@ const emit = defineEmits<{ retry: [] }>()
 const levelTone = computed(() =>
   ['上吉', '吉', '中吉'].includes(props.report?.level ?? '') ? 'bg-cinnabar' : 'bg-ink',
 )
+
+/** 招财猫按运势高低给出不同姿态。 */
+const catMood = computed(() => {
+  const total = props.report?.total ?? 0
+  if (total >= 75) return 'cheer' as const
+  if (total >= 55) return 'invite' as const
+  return 'rest' as const
+})
 </script>
 
 <template>
   <section class="space-y-5">
-    <div v-if="!hasProfile" class="sheet p-10 text-center">
-      <p class="font-display text-2xl text-ink">从填写你的生辰开始</p>
-      <p class="mx-auto mt-3 max-w-sm text-sm leading-6 text-ink-soft">
-        在左侧填写姓名与出生日期（时辰可选），保存后即可生成今日运势与七日趋势。资料仅保存在本机。
+    <div v-if="!hasProfile" class="sheet p-8">
+      <div class="relative mx-auto max-w-xs">
+        <div class="bubble mb-4 text-center">
+          <p class="text-sm leading-6 text-ink">先在左侧写下你的生辰，我来帮你排盘～</p>
+        </div>
+        <FortuneCat mood="invite" class="mx-auto w-36" />
+      </div>
+      <p class="mt-4 text-center text-xs leading-5 text-ink-faint">
+        资料仅保存在本机，不会上传到任何服务器。
       </p>
     </div>
 
@@ -58,7 +73,7 @@ const levelTone = computed(() =>
               属{{ report.animal }} {{ report.zodiac }} 生命数字 {{ report.lifeNumber }}
             </p>
           </div>
-          <span class="seal mt-1 h-9 px-2 text-sm" :class="levelTone">{{ report.level }}</span>
+          <span class="seal mt-1 h-9 px-2 text-sm" :class="levelTone" style="transform: rotate(-2deg)">{{ report.level }}</span>
         </div>
 
         <div class="grid grid-cols-2 divide-x divide-hairline sm:grid-cols-4">
@@ -78,9 +93,12 @@ const levelTone = computed(() =>
       </div>
 
       <div class="sheet grid gap-0 lg:grid-cols-[280px_minmax(0,1fr)]">
-        <div class="flex flex-col items-center justify-center border-b border-hairline p-6 lg:border-b-0 lg:border-r">
+        <div class="flex flex-col items-center border-b border-hairline p-6 lg:border-b-0 lg:border-r">
           <ScoreGauge :score="report.total" />
-          <p class="mt-5 text-center text-sm leading-6 text-ink-soft">{{ report.advice }}</p>
+          <div class="bubble mt-4 w-full">
+            <p class="text-sm leading-6 text-ink">{{ report.advice }}</p>
+          </div>
+          <FortuneCat :mood="catMood" class="mt-3 w-28" />
         </div>
 
         <div class="p-5">
@@ -127,16 +145,28 @@ const levelTone = computed(() =>
         </div>
       </section>
 
-      <section class="sheet grid divide-y divide-hairline sm:grid-cols-2 sm:divide-x sm:divide-y-0">
-        <div class="p-4">
+      <div class="flex items-center gap-3" aria-hidden="true">
+        <span class="h-px flex-1 bg-hairline"></span>
+        <CloudDivider class="h-6 w-auto" />
+        <span class="h-px flex-1 bg-hairline"></span>
+      </div>
+
+      <section class="cloud-edge grid divide-y divide-hairline sm:grid-cols-2 sm:divide-x sm:divide-y-0">
+        <div class="bg-cinnabar/[0.05] p-4">
           <h3 class="font-display text-xl text-cinnabar">宜</h3>
           <p class="mt-2 text-sm leading-7 text-ink">{{ report.yi.join('、') }}</p>
         </div>
-        <div class="p-4">
+        <div class="bg-ink/[0.045] p-4">
           <h3 class="font-display text-xl text-ink">忌</h3>
           <p class="mt-2 text-sm leading-7 text-ink">{{ report.ji.join('、') }}</p>
         </div>
       </section>
+
+      <div class="flex items-center gap-3" aria-hidden="true">
+        <span class="h-px flex-1 bg-hairline"></span>
+        <CloudDivider class="h-6 w-auto" />
+        <span class="h-px flex-1 bg-hairline"></span>
+      </div>
 
       <section class="sheet p-5">
         <h3 class="mb-3 text-sm font-semibold text-ink">7 日趋势</h3>
