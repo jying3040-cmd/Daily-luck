@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watchEffect } from 'vue'
 import ProfileForm from './components/ProfileForm.vue'
 import ChartPanel from './components/ChartPanel.vue'
 import ReportPanel from './components/ReportPanel.vue'
+import FortuneSlip from './components/FortuneSlip.vue'
 import { fetchProfile, fetchReports, saveProfile } from './lib/api'
 import type { Chart, Profile, Report } from './lib/types'
 
@@ -24,6 +25,12 @@ const saveError = ref('')
 
 const hasProfile = computed(() => chart.value !== null)
 const report = computed(() => reports.value.find((item) => item.date === today) ?? null)
+
+/** 锦囊签语种子：只取已保存的命盘，避免未保存的修改实时改变签文。 */
+const slipSeed = computed(() => {
+  const c = chart.value?.eightChar
+  return c ? `${c.year}${c.month}${c.day}${c.time}` : ''
+})
 
 /** 最近一次成功保存的档案快照，用于判断是否还有未保存的修改。 */
 const savedSnapshot = ref(JSON.stringify(EMPTY_PROFILE))
@@ -135,6 +142,7 @@ onMounted(async () => {
           @save="handleSave"
         />
         <ChartPanel :chart="chart" />
+        <FortuneSlip v-if="chart" :today="today" :seed="slipSeed" />
       </aside>
       <ReportPanel :report="report" :trend="reports" :loading="loading" :error="error" :today="today" :has-profile="hasProfile" @retry="loadTrend" />
     </main>
