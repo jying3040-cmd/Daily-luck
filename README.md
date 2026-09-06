@@ -82,7 +82,15 @@ npm start
 
 开发模式下 Vite 会将 `/api` 请求代理到后端，按 `Ctrl+C` 可同时停止两个进程。
 
-### 方式三：Docker
+### 方式三：一键部署在线 Demo（Render 免费层）
+
+不想本地安装？点一下按钮，几分钟得到一个可访问的在线 Demo：
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/jying3040-cmd/Daily-luck)
+
+> 免费实例闲置会休眠，首次打开需等 30~60 秒；演示实例未挂持久磁盘，数据仅供演示。
+
+### 方式四：Docker
 
 ```bash
 docker build -t daily-luck .

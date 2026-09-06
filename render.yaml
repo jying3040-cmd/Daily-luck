@@ -1,0 +1,12 @@
+# 一键部署到 Render 免费层（演示用途）
+# 注意：免费实例闲置 15 分钟会休眠，首次访问需 30~60 秒冷启动；
+# 免费层不挂持久磁盘，重新部署后演示数据会重置（对演示反而更干净）。
+services:
+  - type: web
+    name: daily-luck
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: HOST
+        value: 0.0.0.0

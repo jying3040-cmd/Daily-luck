@@ -80,7 +80,15 @@ In development, Vite proxies `/api` requests to the backend. Press `Ctrl+C` to s
 
 Windows users can also double-click [`start.bat`](start.bat) to install, build and launch in one step.
 
-### Option 2: Docker
+### Option 2: One-click live demo (Render free tier)
+
+Don't want to install anything? Click the button to spin up a hosted demo in minutes:
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/jying3040-cmd/Daily-luck)
+
+> Free instances sleep when idle (first visit takes 30–60s) and don't include a persistent disk, so demo data resets on redeploy.
+
+### Option 3: Docker
 
 ```bash
 docker build -t daily-luck .
