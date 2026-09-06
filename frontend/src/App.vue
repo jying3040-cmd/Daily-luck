@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-import { Sparkles } from '@lucide/vue'
+import { computed, onMounted, ref, watchEffect } from 'vue'
 import ProfileForm from './components/ProfileForm.vue'
 import ChartPanel from './components/ChartPanel.vue'
 import ReportPanel from './components/ReportPanel.vue'
@@ -29,6 +28,16 @@ const report = computed(() => reports.value.find((item) => item.date === today) 
 /** 最近一次成功保存的档案快照，用于判断是否还有未保存的修改。 */
 const savedSnapshot = ref(JSON.stringify(EMPTY_PROFILE))
 const dirty = computed(() => JSON.stringify(profile.value) !== savedSnapshot.value)
+
+/** 有未保存的修改时，离开页面前给出浏览器确认。 */
+watchEffect((onCleanup) => {
+  if (!dirty.value) return
+  const handler = (event: BeforeUnloadEvent) => {
+    event.preventDefault()
+  }
+  window.addEventListener('beforeunload', handler)
+  onCleanup(() => window.removeEventListener('beforeunload', handler))
+})
 
 function dateKey(date: Date): string {
   const year = date.getFullYear()
@@ -99,27 +108,23 @@ onMounted(async () => {
 
 <template>
   <div class="min-h-screen">
-    <header class="sticky top-0 z-20 border-b border-slate-200/80 bg-[#f7fafb]/90 backdrop-blur">
+    <header class="sticky top-0 z-20 border-b border-hairline bg-paper/95 backdrop-blur">
       <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
         <div class="flex items-center gap-2.5">
-          <div class="grid h-9 w-9 place-items-center rounded-lg bg-[#182230] text-amber-300 shadow-sm">
-            <Sparkles :size="18" />
-          </div>
+          <div class="seal h-9 w-9 text-xl">運</div>
           <div>
-            <h1 class="text-[15px] font-bold text-slate-900">每日运势</h1>
-            <p class="text-[11px] text-slate-500">个人本地版</p>
+            <h1 class="text-[15px] font-bold text-ink">每日运势</h1>
+            <p class="text-[11px] text-ink-soft">本地黄历 · 数据不出本机</p>
           </div>
         </div>
-        <div class="flex items-center gap-2 text-sm text-slate-600">
-          <span class="hidden sm:inline">{{ todayLabel }}</span>
-          <span class="rounded-full border border-teal-200 bg-teal-50 px-2.5 py-1 text-xs font-medium text-teal-700">
-            仅供娱乐参考
-          </span>
+        <div class="flex items-center gap-3 text-sm text-ink-soft">
+          <span class="hidden tabular-nums sm:inline">{{ todayLabel }}</span>
+          <span class="text-xs text-ink-faint">仅供娱乐参考</span>
         </div>
       </div>
     </header>
 
-    <main class="mx-auto grid max-w-6xl gap-5 px-4 py-5 sm:px-6 lg:grid-cols-[360px_minmax(0,1fr)] lg:items-start">
+    <main class="paper-in mx-auto grid max-w-6xl gap-5 px-4 py-5 sm:px-6 lg:grid-cols-[360px_minmax(0,1fr)] lg:items-start">
       <aside class="space-y-5">
         <ProfileForm
           v-model="profile"
@@ -134,7 +139,7 @@ onMounted(async () => {
       <ReportPanel :report="report" :trend="reports" :loading="loading" :error="error" :today="today" :has-profile="hasProfile" @retry="loadTrend" />
     </main>
 
-    <footer class="mx-auto max-w-6xl px-4 pb-8 pt-2 text-xs text-slate-400 sm:px-6">
+    <footer class="mx-auto max-w-6xl px-4 pb-8 pt-2 text-xs text-ink-faint sm:px-6">
       数据仅保存在本机 SQLite，服务只监听 127.0.0.1。
     </footer>
   </div>

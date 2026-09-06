@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { CalendarDays, Check, Clock, Droplets, Loader2, Phone, Save, User } from '@lucide/vue'
+import { Check, Loader2 } from '@lucide/vue'
 import type { Profile } from '../lib/types'
 
 const props = defineProps<{
@@ -47,21 +47,17 @@ const bloodTypes = [
 </script>
 
 <template>
-  <section class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-    <div class="mb-4 flex items-center gap-2">
-      <User :size="16" class="text-slate-500" />
-      <h2 class="text-sm font-semibold text-slate-800">个人资料</h2>
-    </div>
+  <section class="sheet p-5">
+    <h2 class="mb-4 border-b border-hairline pb-3 text-sm font-semibold text-ink">个人资料</h2>
 
     <div class="space-y-4">
       <label class="block">
-        <span class="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-slate-600">
-          <User :size="13" />
-          姓名
-        </span>
+        <span class="mb-1.5 block text-xs font-medium text-ink-soft">姓名</span>
         <input
           :value="modelValue.name"
           type="text"
+          name="name"
+          autocomplete="name"
           maxlength="30"
           class="field"
           @input="update('name', ($event.target as HTMLInputElement).value)"
@@ -69,52 +65,46 @@ const bloodTypes = [
       </label>
 
       <label class="block">
-        <span class="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-slate-600">
-          <CalendarDays :size="13" />
-          出生日期
-        </span>
+        <span class="mb-1.5 block text-xs font-medium text-ink-soft">出生日期</span>
         <input
           :value="modelValue.birthDate"
           type="date"
+          name="birthdate"
+          autocomplete="bday"
           class="field"
           @input="update('birthDate', ($event.target as HTMLInputElement).value)"
         />
       </label>
 
       <label class="block">
-        <span class="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-slate-600">
-          <Clock :size="13" />
-          出生时辰
-        </span>
+        <span class="mb-1.5 block text-xs font-medium text-ink-soft">出生时辰</span>
         <input
           :value="modelValue.birthTime"
           type="time"
+          name="birthtime"
           class="field"
           @input="update('birthTime', ($event.target as HTMLInputElement).value)"
         />
       </label>
 
       <label class="block">
-        <span class="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-slate-600">
-          <Phone :size="13" />
-          手机尾号
-        </span>
+        <span class="mb-1.5 block text-xs font-medium text-ink-soft">手机尾号</span>
         <input
           :value="modelValue.phoneTail"
           type="text"
+          name="phone-tail"
           inputmode="numeric"
+          autocomplete="off"
           maxlength="4"
-          placeholder="4 位"
+          placeholder="如 6789"
+          spellcheck="false"
           class="field"
           @input="setPhoneTail"
         />
       </label>
 
-      <div>
-        <span class="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-slate-600">
-          <Droplets :size="13" />
-          血型
-        </span>
+      <fieldset>
+        <legend class="mb-1.5 text-xs font-medium text-ink-soft">血型</legend>
         <div class="grid grid-cols-5 gap-1.5">
           <button
             v-for="blood in bloodTypes"
@@ -122,15 +112,16 @@ const bloodTypes = [
             type="button"
             class="segment"
             :class="modelValue.bloodType === blood.key ? 'segment-active' : ''"
+            :aria-pressed="modelValue.bloodType === blood.key"
             @click="update('bloodType', blood.key)"
           >
             {{ blood.label }}
           </button>
         </div>
-      </div>
+      </fieldset>
 
-      <div>
-        <span class="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-slate-600">性别</span>
+      <fieldset>
+        <legend class="mb-1.5 text-xs font-medium text-ink-soft">性别</legend>
         <div class="grid grid-cols-3 gap-1.5">
           <button
             v-for="gender in genders"
@@ -138,31 +129,31 @@ const bloodTypes = [
             type="button"
             class="segment"
             :class="modelValue.gender === gender.key ? 'segment-active' : ''"
+            :aria-pressed="modelValue.gender === gender.key"
             @click="update('gender', gender.key)"
           >
             {{ gender.label }}
           </button>
         </div>
-      </div>
+      </fieldset>
 
-      <div class="pt-1">
+      <div class="border-t border-hairline pt-4">
         <button
           type="button"
           :disabled="saving"
-          class="flex w-full items-center justify-center gap-2 rounded-lg bg-teal-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60"
+          class="flex w-full items-center justify-center gap-2 rounded-[4px] bg-ink px-4 py-2.5 text-sm font-semibold text-sheet transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-60"
           @click="emit('save', modelValue)"
         >
-          <Loader2 v-if="saving" :size="15" class="animate-spin" />
-          <Save v-else :size="15" />
+          <Loader2 v-if="saving" :size="15" class="animate-spin" aria-hidden="true" />
           {{ saving ? '保存中…' : '保存资料' }}
         </button>
 
-        <div class="mt-2 flex min-h-5 flex-wrap items-center gap-x-2 gap-y-1 text-xs">
-          <span v-if="saveError" class="text-rose-600">{{ saveError }}</span>
-          <span v-else-if="dirty" class="text-amber-600">有未保存的修改</span>
-          <span v-else-if="savedLabel" class="flex items-center gap-1 text-emerald-600">
-            <Check :size="13" />
-            已保存 {{ savedLabel }}
+        <div aria-live="polite" class="mt-2 flex min-h-5 flex-wrap items-center gap-x-2 gap-y-1 text-xs">
+          <span v-if="saveError" class="text-cinnabar">{{ saveError }}</span>
+          <span v-else-if="dirty" class="text-ink-soft">有未保存的修改</span>
+          <span v-else-if="savedLabel" class="flex items-center gap-1 text-ink-soft">
+            <Check :size="13" aria-hidden="true" />
+            已保存 <span class="tabular-nums">{{ savedLabel }}</span>
           </span>
         </div>
       </div>

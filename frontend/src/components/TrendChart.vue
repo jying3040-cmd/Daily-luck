@@ -45,8 +45,8 @@ const gridLines = [100, 75, 50, 25]
     <svg :viewBox="`0 0 ${WIDTH} ${HEIGHT}`" class="h-auto w-full" role="img" aria-label="7 日运势趋势">
       <defs>
         <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#0f766e" stop-opacity="0.28" />
-          <stop offset="100%" stop-color="#0f766e" stop-opacity="0.02" />
+          <stop offset="0%" stop-color="#b3352c" stop-opacity="0.09" />
+          <stop offset="100%" stop-color="#b3352c" stop-opacity="0.01" />
         </linearGradient>
       </defs>
 
@@ -56,25 +56,25 @@ const gridLines = [100, 75, 50, 25]
           :x2="WIDTH - PAD_RIGHT"
           :y1="yFor(value)"
           :y2="yFor(value)"
-          stroke="#e2e8f0"
-          stroke-dasharray="4 5"
+          class="stroke-hairline"
+          stroke-dasharray="2 4"
         />
-        <text :x="PAD_LEFT - 8" :y="yFor(value) + 3" text-anchor="end" font-size="10" class="fill-slate-400">
+        <text :x="PAD_LEFT - 8" :y="yFor(value) + 3" text-anchor="end" font-size="10" class="fill-ink-faint tabular-nums">
           {{ value }}
         </text>
       </g>
 
       <path :d="areaPath" fill="url(#trendFill)" />
-      <path :d="linePath" fill="none" stroke="#0f766e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+      <path :d="linePath" fill="none" class="stroke-ink" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 
       <g v-for="point in points" :key="point.report.date">
         <circle
           :cx="point.x"
           :cy="point.y"
-          :r="point.isToday ? 5.5 : 3.5"
-          :fill="point.isToday ? '#c2410c' : '#ffffff'"
-          :stroke="point.isToday ? '#c2410c' : '#0f766e'"
-          stroke-width="2"
+          :r="point.isToday ? 5 : 3.5"
+          :fill="point.isToday ? '#b3352c' : '#fffdf8'"
+          :class="point.isToday ? 'stroke-cinnabar' : 'stroke-ink'"
+          stroke-width="1.5"
         />
         <text
           :x="point.x"
@@ -82,11 +82,12 @@ const gridLines = [100, 75, 50, 25]
           text-anchor="middle"
           font-size="11"
           font-weight="600"
-          :fill="point.isToday ? '#c2410c' : '#334155'"
+          :fill="point.isToday ? '#b3352c' : '#2a2723'"
+          class="tabular-nums"
         >
           {{ point.report.total }}
         </text>
-        <text :x="point.x" :y="HEIGHT - 8" text-anchor="middle" font-size="10" fill="#64748b">
+        <text :x="point.x" :y="HEIGHT - 8" text-anchor="middle" font-size="10" class="fill-ink-soft tabular-nums">
           {{ point.report.date.slice(5) }}
         </text>
       </g>
@@ -98,7 +99,7 @@ const gridLines = [100, 75, 50, 25]
         text-anchor="middle"
         font-size="10"
         font-weight="600"
-        fill="#c2410c"
+        class="fill-cinnabar"
       >
         今日
       </text>

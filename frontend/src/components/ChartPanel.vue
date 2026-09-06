@@ -1,19 +1,23 @@
 <script setup lang="ts">
-import { CalendarHeart } from '@lucide/vue'
 import type { Chart } from '../lib/types'
 
 defineProps<{ chart: Chart | null }>()
+
+const ELEMENT_LABEL: Record<string, string> = {
+  metal: '金',
+  wood: '木',
+  water: '水',
+  fire: '火',
+  earth: '土',
+}
 </script>
 
 <template>
-  <section class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-    <div class="mb-4 flex items-center gap-2">
-      <CalendarHeart :size="16" class="text-slate-500" />
-      <h2 class="text-sm font-semibold text-slate-800">我的命盘</h2>
-    </div>
+  <section class="sheet p-5">
+    <h2 class="mb-4 border-b border-hairline pb-3 text-sm font-semibold text-ink">我的命盘</h2>
 
     <template v-if="chart">
-      <div class="grid grid-cols-4 gap-1.5">
+      <div class="grid grid-cols-4 divide-x divide-hairline rounded-[4px] border border-hairline bg-paper/60">
         <div
           v-for="(pillar, label) in {
             年: chart.eightChar.year,
@@ -22,20 +26,34 @@ defineProps<{ chart: Chart | null }>()
             时: chart.eightChar.time,
           }"
           :key="label"
-          class="rounded-lg border border-slate-100 bg-slate-50 p-2 text-center"
+          class="flex flex-col items-center gap-3 py-4"
         >
-          <div class="text-[10px] text-slate-400">{{ label }}柱</div>
-          <div class="font-mono text-sm font-semibold text-slate-800">{{ pillar }}</div>
+          <span class="text-[11px] text-ink-faint">{{ label }}柱</span>
+          <span class="font-display text-2xl leading-none text-ink [writing-mode:vertical-rl]">{{ pillar }}</span>
         </div>
       </div>
-      <div class="mt-3 flex flex-wrap gap-1.5">
-        <span class="chip">{{ chart.zodiac }}</span>
-        <span class="chip">生肖 {{ chart.animal }}</span>
-        <span class="chip">生命数字 {{ chart.lifeNumber }}</span>
-        <span class="chip">日干五行 {{ chart.dayElement }}</span>
-      </div>
-      <p class="mt-3 text-[11px] leading-5 text-slate-400">出生时辰已参与时柱排盘。</p>
+
+      <dl class="mt-4 grid grid-cols-2 gap-x-5 text-xs">
+        <div class="flex items-baseline justify-between border-b border-hairline/70 py-1.5">
+          <dt class="text-ink-faint">生肖</dt>
+          <dd class="text-ink">{{ chart.animal }}</dd>
+        </div>
+        <div class="flex items-baseline justify-between border-b border-hairline/70 py-1.5">
+          <dt class="text-ink-faint">星座</dt>
+          <dd class="text-ink">{{ chart.zodiac }}</dd>
+        </div>
+        <div class="flex items-baseline justify-between border-b border-hairline/70 py-1.5">
+          <dt class="text-ink-faint">生命数字</dt>
+          <dd class="tabular-nums text-ink">{{ chart.lifeNumber }}</dd>
+        </div>
+        <div class="flex items-baseline justify-between border-b border-hairline/70 py-1.5">
+          <dt class="text-ink-faint">日干五行</dt>
+          <dd class="text-ink">{{ ELEMENT_LABEL[chart.dayElement] ?? chart.dayElement }}</dd>
+        </div>
+      </dl>
+
+      <p class="mt-3 text-[11px] leading-5 text-ink-faint">出生时辰已参与时柱排盘。</p>
     </template>
-    <p v-else class="text-xs leading-5 text-slate-500">填写姓名与出生日期并保存后，将在这里展示你的命盘。</p>
+    <p v-else class="text-xs leading-5 text-ink-soft">填写姓名与出生日期并保存后，将在这里展示你的命盘。</p>
   </section>
 </template>
