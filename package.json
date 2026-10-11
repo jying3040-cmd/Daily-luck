@@ -24,7 +24,7 @@
     "npm": ">=10"
   },
   "devDependencies": {
-    "@yao-pkg/pkg": "6.21.0"
+    "@yao-pkg/pkg": "6.23.0"
   },
   "license": "MIT"
 }

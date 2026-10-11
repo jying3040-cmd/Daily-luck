@@ -12,13 +12,13 @@
     "verify": "tsx src/verify.ts"
   },
   "dependencies": {
-    "@fastify/static": "^10.1.3",
+    "@fastify/static": "^10.1.5",
     "fastify": "^5.11.3",
     "lunar-typescript": "^1.8.6"
   },
   "devDependencies": {
-    "@types/node": "^26.2.0",
-    "tsx": "^4.23.11",
+    "@types/node": "^26.6.4",
+    "tsx": "^4.23.15",
     "typescript": "^5.9.3"
   }
 }
