@@ -5,7 +5,8 @@ import { join } from 'node:path'
 import { after, before, test } from 'node:test'
 import { DatabaseSync } from 'node:sqlite'
 import type { FastifyInstance } from 'fastify'
-import { buildApp, isDateKey } from './app.js'
+import { buildApp } from './app.js'
+import { isDateKey } from './validate.js'
 
 const tempDir = mkdtempSync(join(tmpdir(), 'daily-fortune-'))
 const databaseFile = join(tempDir, 'test.db')
