@@ -4,6 +4,10 @@
 
 你的姓名与生辰只保存在你自己的电脑里，加密入库、离线可用，不上传任何服务器。
 
+## Windows 版本下载
+
+[打开最新 Release 下载页](https://github.com/jying3040-cmd/Daily-luck/releases/latest)。发布包提供 Windows 10/11 x64 单文件 `.exe`（无需另装 Node.js）、完整源码 ZIP 和 `SHA256SUMS.txt` 校验文件。首次运行时应用会打开浏览器，个人数据保存在 `%LOCALAPPDATA%\DailyLuck\data`。该 `.exe` 未签名，Windows 可能显示 SmartScreen 安全提示。
+
 ## GitHub 仓库
 
 [jying3040-cmd/Daily-luck](https://github.com/jying3040-cmd/Daily-luck) 是本项目的源码与文档仓库，也是查看更新、反馈问题和参与贡献的入口。应用运行时，个人档案仍保存在本机，不会因为项目托管在 GitHub 而上传。
@@ -151,14 +155,14 @@ docker run --rm -p 3000:3000 -v daily-luck-data:/app/data daily-luck
 
 ## 数据与隐私
 
-- 数据写入项目根目录的 `data/fortune.db`。
+- 源码运行时数据写入项目根目录的 `data/fortune.db`；Windows EXE 版写入 `%LOCALAPPDATA%\DailyLuck\data\fortune.db`。
 - 姓名与手机尾号使用 AES-256-GCM 加密后入库。
-- 首次运行时会在 `data/secret.key` 生成本地密钥。
+- 首次运行时会在对应数据目录生成 `secret.key` 本地密钥。
 - `data/`、构建产物、依赖和环境文件均已加入 `.gitignore`。
 - 服务默认只监听 `127.0.0.1`，且不开放跨域 API 访问。
 - 请同时备份数据库与密钥；**丢失 `secret.key` 后，已加密字段无法恢复**。
 
-> ⚠️ 不要把 `data/fortune.db`、`data/secret.key` 或真实个人资料提交到 GitHub。
+> ⚠️ 不要把数据库、`secret.key` 或真实个人资料提交到 GitHub。
 
 ## 许可
 

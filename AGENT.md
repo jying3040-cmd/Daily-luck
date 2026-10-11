@@ -45,7 +45,7 @@
 ### 数据与密钥
 
 - 姓名与手机尾号必须**加密后入库**（AES-256-GCM，12 字节随机 IV，认证标签与密文一起存储）。
-- **不得**把 `data/fortune.db`、`data/secret.key` 或任何真实个人资料提交到仓库。
+- **不得**把 `data/fortune.db`、`data/secret.key`、Windows EXE 的 `%LOCALAPPDATA%\DailyLuck\data` 或任何真实个人资料提交到仓库。
 - `data/`、`dist/`、`node_modules/`、`.env*` 已在 `.gitignore` 中，**不要移除这些规则**。
 - 测试中只使用虚构数据。
 - 丢失 `secret.key` 会导致已加密字段不可恢复——任何涉及密钥的改动都要明确说明这一点。

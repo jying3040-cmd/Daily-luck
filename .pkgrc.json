@@ -1,0 +1,9 @@
+{
+  "assets": [
+    "frontend/dist/**/*"
+  ],
+  "targets": [
+    "node24-win-x64"
+  ],
+  "sea": true
+}

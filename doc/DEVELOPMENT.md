@@ -51,7 +51,7 @@ npm start
 | `PORT` | 监听端口，默认 `3000`；必须是 1–65535 的整数 | 否 | 否 |
 | `NODE_ENV` | Docker 镜像中设为 `production` | 否 | 否 |
 
-**本项目没有密钥类环境变量。** 加密密钥由程序在首次运行时自动生成到 `data/secret.key`（权限 `0600`），不需要手工配置。
+**本项目没有密钥类环境变量。** 源码运行时，加密密钥由程序首次运行时生成到 `data/secret.key`（权限 `0600`）；Windows EXE 版生成到 `%LOCALAPPDATA%\DailyLuck\data\secret.key`。
 
 `.gitignore` 已忽略 `.env` 与 `.env.local`；**不要提交任何环境文件**。
 
@@ -76,7 +76,7 @@ npm start
 | `server/src/*.test.ts` | 与被测模块同目录的测试 |
 | `scripts/` | 开发与工具脚本 |
 | `docs/screenshots/` | README 使用的截图 |
-| `data/` | 运行数据（**已忽略，不提交**） |
+| `data/` | 源码运行数据（**已忽略，不提交**）；Windows EXE 版使用 `%LOCALAPPDATA%\DailyLuck\data` |
 
 ### 新增文件判断
 
@@ -124,7 +124,7 @@ npm start
 ### 数据与隐私
 
 - 测试中只使用**虚构数据**。
-- 不要把 `data/fortune.db`、`data/secret.key` 或真实个人资料提交到仓库。
+- 不要把 `data/fortune.db`、`data/secret.key`、Windows EXE 版 `%LOCALAPPDATA%\DailyLuck\data` 或真实个人资料提交到仓库。
 - 保持 `.gitignore` 中的 `data/`、`.env`、`dist/`、`node_modules/` 规则。
 
 ## 6. Git 分支规范
@@ -238,6 +238,18 @@ npm run build      # 前端 vue-tsc --noEmit + vite build；服务端 tsc
 | 生产启动 | `npm start` → `node server/dist/index.js` |
 | 环境区别 | 不区分构建产物；通过 `HOST` / `PORT` / `NODE_ENV` 区分运行行为 |
 
+### GitHub Release
+
+推送 `v*` 标签会触发 `.github/workflows/release.yml`，在 Windows x64 runner 上构建并发布：
+
+| 资产 | 适用对象与用途 |
+|---|---|
+| `Daily-Luck-v*-Windows-x64.exe` | Windows 10/11 64 位用户；内置 Node.js，无需单独安装运行环境，双击后打开本地页面 |
+| `Daily-Luck-v*-source.zip` | 源码包；本地构建需 Node.js `22.12.0`+ 和 npm `10`+ |
+| `SHA256SUMS.txt` | 校验 exe 与源码包的 SHA-256 摘要 |
+
+打包版的档案数据库与密钥存放在 `%LOCALAPPDATA%\DailyLuck\data`。exe 未签名，首次运行时 Windows 可能显示 SmartScreen 提示。
+
 ## 11. 部署
 
 ### 本地生产模式
@@ -297,7 +309,7 @@ docker run --rm -p 3000:3000 -v daily-luck-data:/app/data daily-luck
 | 出生时辰被拒绝 | 必须为 `HH:mm`（`00:00`–`23:59`） |
 | 手机尾号被拒绝 | 最多 4 位数字 |
 | 查询区间报错 | 单次最多 366 天，且 `start` 不能晚于 `end` |
-| 档案读取失败、提示密钥问题 | `data/secret.key` 丢失或损坏（长度非 32 字节）；从备份恢复密钥 |
+| 档案读取失败、提示密钥问题 | `secret.key` 丢失或损坏（长度非 32 字节）；从相应数据目录的备份恢复密钥 |
 | 换机器后档案是乱码/读不出 | 数据库与密钥不配套；必须成对迁移 |
 | 结果每次刷新都变 | 不应发生；检查是否误引入了非确定性输入 |
 | Docker 中数据丢失 | 未挂载 `/app/data` 卷 |

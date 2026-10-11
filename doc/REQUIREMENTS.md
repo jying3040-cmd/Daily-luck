@@ -177,7 +177,7 @@
 
 ### 数据约束
 
-- 数据文件位于项目根目录 `data/fortune.db`；密钥位于 `data/secret.key`（权限 `0600`）。
+- 源码运行时数据文件位于项目根目录 `data/fortune.db`，密钥位于 `data/secret.key`；Windows EXE 版存入 `%LOCALAPPDATA%\DailyLuck\data`。
 - 加密字段：姓名、手机尾号。非加密字段：出生日期、出生时辰、性别、血型。
 - 报告缓存以「日期 + 波动开关」为主键。
 

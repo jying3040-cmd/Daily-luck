@@ -25,8 +25,8 @@
 │  └────────────────┬───────────────────────┘  │
 └───────────────────┼──────────────────────────┘
                     ▼
-        data/fortune.db（SQLite）
-        data/secret.key（本地密钥，0600）
+        data/fortune.db（源码运行时 SQLite）
+        data/secret.key（源码运行时密钥）
                     ▲
                     │ 历法计算
         lunar-typescript（进程内，无网络）
@@ -117,7 +117,7 @@
 
 - `buildApp(options)` 支持注入 `databaseFile`、`encryptionKey`、`logger`、`serveFrontend`，使测试可以完全隔离运行。
 - 应用关闭时通过 `onClose` 钩子关闭数据库。
-- `paths.ts` 以模块所在目录反推项目根目录，因此开发（`server/src`）与构建后（`server/dist`）都能正确定位 `data/` 与 `frontend/dist`。
+- `paths.ts` 以模块所在目录反推项目资源根目录，因此开发（`server/src`）与构建后（`server/dist`）都能正确定位 `frontend/dist`。源码运行数据写入项目根目录 `data/`；Windows EXE 版写入 `%LOCALAPPDATA%\DailyLuck\data`，避免尝试修改只读的可执行文件快照。
 
 ## 4. 模块划分
 
@@ -135,7 +135,7 @@
 
 ## 5. 数据模型
 
-SQLite，位于 `data/fortune.db`。
+SQLite。源码运行时位于项目根目录 `data/fortune.db`；Windows EXE 版位于 `%LOCALAPPDATA%\DailyLuck\data\fortune.db`。
 
 ### profile（单行表）
 
@@ -170,7 +170,7 @@ SQLite，位于 `data/fortune.db`。
 
 - 档案：单行，随用户修改覆盖更新。
 - 报告缓存：按日累积，无自动清理；重复访问命中缓存。
-- 密钥：首次运行生成并写入 `data/secret.key`（权限 `0600`）。
+- 密钥：首次运行生成并写入数据库所在目录的 `secret.key`（源码运行时权限 `0600`）。
 
 ## 6. API 与服务关系
 
@@ -285,7 +285,7 @@ buildChart(profile) 返回命盘
 
 ### 数据访问范围
 
-- 数据仅存本机 `data/`。
+- 数据仅存本机；源码运行时存入项目根目录 `data/`，Windows EXE 版存入 `%LOCALAPPDATA%\DailyLuck\data`。
 - 服务默认只监听 `127.0.0.1`。
 - 不开放跨域（CORS），因此浏览器中其他站点无法读取本服务响应。
 - 无遥测、无上报、无第三方分析。
@@ -297,7 +297,7 @@ buildChart(profile) 返回命盘
 | 字段级加密 | 姓名、手机尾号用 AES-256-GCM 加密后落盘 |
 | IV 随机化 | 每次加密生成 12 字节随机 IV，与密文分开存储 |
 | 完整性校验 | 使用 GCM 认证标签，篡改可被检测 |
-| 密钥文件权限 | `data/secret.key` 以 `0600` 写入 |
+| 密钥文件权限 | 源码运行时的 `data/secret.key` 以 `0600` 写入；Windows EXE 版写入当前用户本地数据目录 |
 | 密钥长度校验 | 读取时校验必须为 32 字节，否则启动报错 |
 | 仓库卫生 | `data/`、`.env*`、构建产物均在 `.gitignore` 中 |
 

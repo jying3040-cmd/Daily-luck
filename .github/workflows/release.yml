@@ -1,0 +1,92 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  windows-release:
+    runs-on: windows-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout release tag
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Verify release tag matches package version
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          if ("v$version" -ne $env:RELEASE_TAG) { throw "Tag $env:RELEASE_TAG does not match package version $version." }
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Prepare output directory
+        shell: pwsh
+        run: New-Item -ItemType Directory -Force -Path release | Out-Null
+
+      - name: Build Windows x64 executable
+        run: npm run package:windows
+
+      - name: Create source archive and SHA-256 sums
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_SHA: ${{ github.sha }}
+        run: |
+          $exePath = "release/Daily-Luck-$env:RELEASE_TAG-Windows-x64.exe"
+          Move-Item -LiteralPath "release/Daily-Luck-Windows-x64.exe" -Destination $exePath
+
+          $sourcePrefix = "Daily-Luck-$env:RELEASE_TAG-source/"
+          $sourceZip = "release/Daily-Luck-$env:RELEASE_TAG-source.zip"
+          git archive --format=zip --prefix=$sourcePrefix --output=$sourceZip $env:RELEASE_SHA
+          if ($LASTEXITCODE -ne 0) { throw 'Could not create the source archive.' }
+
+          $assets = @($exePath, $sourceZip)
+          $lines = foreach ($asset in $assets) {
+            $hash = (Get-FileHash -LiteralPath $asset -Algorithm SHA256).Hash.ToLowerInvariant()
+            "$hash  $([System.IO.Path]::GetFileName($asset))"
+          }
+          [System.IO.File]::WriteAllLines('release/SHA256SUMS.txt', $lines, [System.Text.Encoding]::UTF8)
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Daily Luck ${{ github.ref_name }} — Windows 10/11 x64
+          body: |
+            ## Windows 10/11 x64
+
+            `Daily-Luck-${{ github.ref_name }}-Windows-x64.exe` is a standalone 64-bit Windows executable. Node.js does not need to be installed. Double-click the file to start the local app and open it in your default browser.
+
+            The profile database and encryption key stay on this Windows account under `%LOCALAPPDATA%\DailyLuck\data`.
+
+            The executable is unsigned, so Windows may show a SmartScreen warning on first launch.
+
+            ## Source package
+
+            `Daily-Luck-${{ github.ref_name }}-source.zip` contains the source at this release tag. Building from source requires Node.js 22.12.0 or newer and npm 10 or newer.
+
+            `SHA256SUMS.txt` contains SHA-256 hashes for the executable and source archive.
+          files: |
+            release/Daily-Luck-${{ github.ref_name }}-Windows-x64.exe
+            release/Daily-Luck-${{ github.ref_name }}-source.zip
+            release/SHA256SUMS.txt
+          draft: false
+          prerelease: false
+          make_latest: true
